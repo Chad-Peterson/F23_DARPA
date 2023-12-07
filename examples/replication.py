@@ -1,9 +1,6 @@
 import numpy as np
-import matplotlib.pyplot as plt
-from scipy.fft import fft, ifft
-from scipy.signal import convolve
 
-from utils import plot_grid, plot_fft
+from utils import plot_grid, plot_fft, plot_grid_rgb, merge_grids
 
 # %% Define the workspace
 
@@ -49,6 +46,11 @@ w[w_rows, w_cols] = 1
 w_fig, w_ax = plot_grid(w, 'Workspace')
 w_fig.show()
 
+w_rgb = np.stack([1-w, 1-w, 1-w], axis=2)
+w_rgb_fig, w_rgb_ax = plot_grid_rgb(w_rgb, 'Workspace RBG')
+w_rgb_fig.show()
+
+
 # %% Define the Object
 
 a = np.zeros((16, 16))
@@ -93,13 +95,19 @@ pointwise_product_fig.show()
 convolution = np.fft.ifft2(pointwise_product)
 
 # Plot the convolution
-convolution_fig, convolution_ax = plot_fft(convolution, 'Convolution')
+convolution_fig, convolution_ax = plot_fft(convolution, 'Convolution', display_boundary=True)
 
 # Color the cells that have a value of close to 0
-convolution_ax.imshow(np.real(convolution) < 0.1, cmap='Blues', interpolation='none', alpha=0.5, extent=[0, convolution.shape[1], 0, convolution.shape[0]])
+# convolution_ax.imshow(np.real(convolution) < 0.1, cmap='Blues', interpolation='none', alpha=0.5, extent=[0, convolution.shape[1], 0, convolution.shape[0]])
+
 
 convolution_fig.show()
 
+merged_grids, merged_grids_rgb = merge_grids(w, w_rgb, a)
 
+merged_grids_fig, merged_grids_ax = plot_grid_rgb(merged_grids_rgb, 'Merged Grids RGB')
+merged_grids_fig.show()
 
+merged_grids_fig, merged_grids_ax = plot_grid(merged_grids, 'Merged Grids')
+merged_grids_fig.show()
 

@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "task-1-extension"
+version = "0.1.0"
+authors = [
+  { name="Chad Peterson", email="cp44@illinois.edu" },
+]
+
+description = "Calculate the Yamada polynomial of spatial topologies."
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+    "networkx",
+    "matplotlib",
+    "numpy",
+    "scipy",
+    "scikit-learn",
+    "yamada",
+]
+
