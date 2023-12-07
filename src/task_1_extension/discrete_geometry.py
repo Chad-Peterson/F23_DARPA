@@ -2,6 +2,15 @@ import numpy as np
 
 
 def shift_and_trim_grid(grid, row_shift, col_shift):
+
+    """
+    Shifts the grid by the specified number of rows and columns and trims the excess.
+    :param grid: 2D numpy array
+    :param row_shift: int
+    :param col_shift: int
+    :return: 2D numpy array
+    """
+
     n, m = grid.shape
 
     # Handle row shift
@@ -21,24 +30,3 @@ def shift_and_trim_grid(grid, row_shift, col_shift):
         shifted_grid = np.concatenate((shifted_grid[:, -col_shift:], np.zeros((n, -col_shift))), axis=1)
 
     return shifted_grid
-
-
-def merge_grids(grid1, grid2, offset=(0, 0)):
-
-    """Superimpose grid2 on grid1."""
-
-    # Determine the size of the grids
-    n, m = grid1.shape
-
-    # Initialize the result array with the first grid
-    result = np.array(grid1)
-
-    row_offset, col_offset = offset
-
-    # Shift the second grid
-    shifted_grid2 = shift_and_trim_grid(grid2, row_offset, col_offset)
-
-    # Add the second grid to the result
-    result += shifted_grid2
-
-    return result

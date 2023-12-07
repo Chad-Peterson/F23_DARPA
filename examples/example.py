@@ -1,11 +1,6 @@
 import numpy as np
-import networkx as nx
-from task_1_extension.harmonic_analysis import convolve, determine_optimal_offset
-# from task_1_extension.discrete_geometry import merge_grids
-from task_1_extension.placement import initialize_domain, initialize_object, find_valid_offset, place_object, generate_placement, plot_grid
-from task_1_extension.path_planning import make_3d, numpy_array_to_networkx_grid_3d, plot_grid_graph, plot_grid_3d, plot_grid_graph_3d, get_port_nodes,\
-    find_shortest_path, find_shortest_paths
-
+from task_1_extension.placement import initialize_domain, initialize_object, generate_placement, plot_grid
+from task_1_extension.path_planning import make_3d, numpy_array_to_networkx_grid_3d, plot_grid_graph_3d, get_port_nodes, find_shortest_paths
 from yamada import SpatialGraph
 
 # Set the random seed for reproducibility
@@ -31,7 +26,6 @@ a1_port_rows = [5, 9]
 a1_port_cols = [6, 8]
 a1, a1_ports = initialize_object('a1', n, m, a1_rows, a1_cols, a1_port_rows, a1_port_cols)
 # plot_grid(a1, 'Object A1')
-
 
 # Object A2
 a2_rows = [5, 6, 6, 7, 7, 7, 8, 8]
@@ -64,7 +58,6 @@ try:
     # Place the objects
     placement, port_placement = generate_placement(w, [a1, a2, a3, a4], [a1_ports, a2_ports, a3_ports, a4_ports])
     plot_grid(placement, 'Placement')
-    # plot_grid(port_placement, 'Port Placement')
 
     # Define port connections
     edges = [('a1_1', 'a2_0'), ('a2_1', 'a3_0'), ('a3_1', 'a4_0'), ('a4_1', 'a1_0')]

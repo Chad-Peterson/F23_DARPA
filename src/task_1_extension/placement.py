@@ -6,7 +6,12 @@ import random
 
 def initialize_domain(n, m, one_pad=True):
     """Initialize a domain of size n x m with zeros.
-    One-pad the domain to avoid boundary effects."""
+    One-pad the domain to avoid boundary effects.
+    :param n: Number of rows
+    :param m: Number of columns
+    :param one_pad: Boolean to one-pad the domain
+    :return: Initialized domain
+    """
 
     domain = np.zeros((n, m))
 

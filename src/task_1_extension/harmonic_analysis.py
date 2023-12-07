@@ -1,47 +1,14 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.colors import LinearSegmentedColormap
-
-
-def plot_grid(grid, title):
-
-    # Create a custom colormap (0: white, 1: black)
-    colors = [(1, 1, 1), (0, 0, 0)]  # White to black
-    cmap_name = 'custom'
-    custom_cmap = LinearSegmentedColormap.from_list(cmap_name, colors)
-
-    fig, ax = plt.subplots()
-
-    ax.set_title(title)
-
-    # Plot the workspace
-    cax = ax.imshow(grid, cmap=custom_cmap, interpolation='none',
-                    extent=[0, grid.shape[1], 0, grid.shape[0]],
-                    vmin=0, vmax=1)
-
-    # Draw the grid lines
-    ax.grid(True)
-
-    # Set the tick locations and labels for the x-axis and y-axis
-    ax.set_xticks(np.arange(0, grid.shape[1]+1, 1))
-    ax.set_yticks(np.arange(0, grid.shape[0]+1, 1))
-
-    ax.set_aspect('equal')
-
-    # Add color bar; 0 = white, 1 = black
-    # cbar = fig.colorbar(ax.imshow(grid, cmap='gray_r', interpolation='none', extent=[0, grid.shape[1], 0, grid.shape[0]]), ax=ax)
-
-    # cbar = fig.colorbar(ax.imshow(grid, cmap='gray_r', interpolation='none', extent=[0, grid.shape[1], 0, grid.shape[0]]), ax=ax)
-
-    # Add a colorbar
-    cbar = fig.colorbar(cax, ax=ax, ticks=[0, 1])
-    cbar.ax.set_yticklabels(['0', '1'])  # Optionally set labels
-
-
-    return fig, ax
 
 
 def plot_fft(fft_result, title):
+    """
+    Plot the FFT of a 2D array.
+    :param fft_result: The result of np.fft.fft2()
+    :param title: The title of the plot
+    :return: None
+    """
 
     fig, ax = plt.subplots()
 
@@ -64,6 +31,13 @@ def plot_fft(fft_result, title):
 
 
 def convolve(a, w, plot=False):
+    """
+    Perform the convolution of a and w.
+    :param a: Object
+    :param w: Workspace
+    :param plot: Whether to plot the FFTs
+    :return: The convolution of a and w
+    """
 
     # Perform the FFTs
     w_fft = np.fft.fft2(w)
@@ -71,31 +45,35 @@ def convolve(a, w, plot=False):
     a_flipped = np.flip(a, axis=1)
     a_flipped_fft = np.fft.fft2(a_flipped)
 
-    # Perform the pointwise product
-    pointwise_product = w_fft * a_flipped_fft
+    # Perform the point-wise product
+    point_wise_product = w_fft * a_flipped_fft
 
     # Perform the inverse FFT
-    convolution = np.fft.ifft2(pointwise_product)
+    convolution = np.fft.ifft2(point_wise_product)
 
     # Take the real part of the result
     convolution = np.real(convolution)
 
+    # Plot the FFT of the workspace
     if plot:
-
-        # Plot the FFT of the workspace
         plot_fft(w_fft, 'FFT of Workspace')
         plot_fft(a_flipped_fft, 'FFT of Flipped Object')
-        plot_fft(pointwise_product, 'Pointwise Product')
+        plot_fft(point_wise_product, 'Point-wise Product')
 
     return convolution
 
 
 def determine_optimal_offset(w, a):
+    """
+    (Deprecated) Determine the optimal offset for placing object a in workspace w.
+    :param w: Workspace
+    :param a: Object
+    :return: The optimal offset
+    """
 
     convolution_wa = convolve(w, a)
 
     # Trim the convolution to prevent object placement outside the workspace
-
 
     # Find the bottom-leftmost zero in the convolution
     bottom_leftmost_zero = np.argwhere(convolution_wa == 0)[0]
