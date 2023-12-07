@@ -1,23 +1,39 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 import random
 
-def initialize_domain(n, m):
+
+def initialize_domain(n, m, one_pad=True):
     """Initialize a domain of size n x m with zeros.
     One-pad the domain to avoid boundary effects."""
 
     domain = np.zeros((n, m))
 
     # One-pad the domain to avoid boundary effects
-    domain = np.pad(domain, 1, 'constant', constant_values=1)
+    if one_pad:
+        domain = np.pad(domain, 1, 'constant', constant_values=1)
+    else:
+        domain = np.pad(domain, 1, 'constant', constant_values=0)
 
     return domain
 
-def initialize_object(n, m, rows, cols):
+def initialize_object(name, n, m, rows, cols, port_rows, port_cols):
     """Initialize an object of size n x m (plus padding) with ones at the specified rows and columns."""
     obj = np.zeros_like(initialize_domain(n, m))
     obj[rows, cols] = 1
-    return obj
+
+
+
+    obj_ports = np.zeros_like(initialize_domain(n, m))
+    obj_ports = obj_ports.astype(str)
+
+    # Create a string for each port name
+    port_names = [name+f'_{i}' for i in range(len(port_rows))]
+
+    obj_ports[port_rows, port_cols] = port_names
+
+    return obj, obj_ports
 
 
 def find_valid_offset(workspace, object_shape):
@@ -89,14 +105,25 @@ def place_object(grid, obj, offset=(0, 0)):
 
     return grid
 
+def place_object_ports(port_workspace, obj_ports, offset=(0, 0)):
+    # Shift and trim the object
+    shifted_obj_ports = shift_and_trim_object(obj_ports, offset[0], offset[1])
 
-def generate_placement(workspace, objects):
+    # Add the nonzero elements of the object to the port_workspace
+    port_workspace[shifted_obj_ports != '0.0'] = shifted_obj_ports[shifted_obj_ports != '0.0']
 
-    for obj in objects:
+    return port_workspace
+
+
+def generate_placement(workspace, objects, objects_ports):
+
+    port_workspace = np.zeros_like(workspace).astype(str)
+    for obj, obj_ports in zip(objects, objects_ports):
         offset = find_valid_offset(workspace, obj)
         workspace = place_object(workspace, obj, offset)
+        port_workspace = place_object_ports(port_workspace, obj_ports, offset)
 
-    return workspace
+    return workspace, port_workspace
 
 
 def plot_grid(grid, title="Grid Plot"):
@@ -113,3 +140,4 @@ def plot_grid(grid, title="Grid Plot"):
     ax.set_ylabel('Row Index')
 
     plt.show()
+
