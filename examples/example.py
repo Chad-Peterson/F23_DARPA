@@ -52,48 +52,61 @@ a4_port_cols = [6, 8]
 a4, a4_ports = initialize_object('a4', n, m, a4_rows, a4_cols, a4_port_rows, a4_port_cols)
 # plot_grid(a4, 'Object A4')
 
+# %% Define the System Connectivity
+
+components = [a1, a2, a3, a4]
+components_ports = [a1_ports, a2_ports, a3_ports, a4_ports]
+nodes = ['a1_0', 'a1_1', 'a2_0', 'a2_1', 'a3_0', 'a3_1', 'a4_0', 'a4_1']
+edges = [('a1_1', 'a2_0'), ('a2_1', 'a3_0'), ('a3_1', 'a4_0'), ('a4_1', 'a1_0')]
+
 # %% Place the Objects
 
-try:
+max_iter = 1
 
-    # Place the objects
-    placement, port_placement = generate_placement(w, [a1, a2, a3, a4], [a1_ports, a2_ports, a3_ports, a4_ports])
-    plot_grid(placement, 'Placement')
+yamada_polynomials = []
 
-    # Define port connections
-    edges = [('a1_1', 'a2_0'), ('a2_1', 'a3_0'), ('a3_1', 'a4_0'), ('a4_1', 'a1_0')]
 
-    G = numpy_array_to_networkx_grid_3d(placement, port_placement)
 
-    nodes_dict = get_port_nodes(port_placement)
+for i in range(max_iter):
+    try:
 
-    # Find the shortest path
-    paths = find_shortest_paths(G, nodes_dict, edges)
+        # Find a valid placement for the objects
+        placement, port_placement = generate_placement(w, components, components_ports)
+        plot_grid(placement, 'Placement')
 
-    # Plot the grid graph
-    plot_grid_graph_3d(G, paths, placement)
+        # Convert the placements to a networkx grid graph
+        G = numpy_array_to_networkx_grid_3d(placement, port_placement)
 
-except:
-    print("No path exists between start and end nodes.")
+        # Get the nodes for the ports
+        nodes_dict = get_port_nodes(port_placement)
 
-# %% Create the Spatial Graph Diagrams
+        # Find the shortest path (for each interconnect)
+        paths = find_shortest_paths(G, nodes_dict, edges)
 
-nodes = ['a1_0', 'a1_1', 'a2_0', 'a2_1', 'a3_0', 'a3_1', 'a4_0', 'a4_1']
+        # Plot the grid graph
+        plot_grid_graph_3d(G, paths, placement)
 
-# add edges between the nodes of a component
-internal_edges = [('a1_0', 'a1_1'), ('a2_0', 'a2_1'), ('a3_0', 'a3_1'), ('a4_0', 'a4_1')]
-edges = edges + internal_edges
+    except:
+        print("No path exists between start and end nodes.")
 
-# Convert the node positions from tuples to numpy arrays
-# node_positions = {node: np.array(nodes_dict[node]) for node in nodes_dict}
+    # %% Create the Spatial Graph Diagrams
 
-# Convert nodes_dict into a 2D array where each row is a node and the columns are the x, y, and z coordinates
-node_positions = np.array([nodes_dict[node] for node in nodes_dict])
+    nodes = ['a1_0', 'a1_1', 'a2_0', 'a2_1', 'a3_0', 'a3_1', 'a4_0', 'a4_1']
 
-# Create the spatial graph diagram
-sg1 = SpatialGraph(nodes=nodes, edges=edges, node_positions=node_positions)
-sg1.plot()
-sgd1 = sg1.create_spatial_graph_diagram()
+    # add edges between the nodes of a component
+    internal_edges = [('a1_0', 'a1_1'), ('a2_0', 'a2_1'), ('a3_0', 'a3_1'), ('a4_0', 'a4_1')]
+    edges = edges + internal_edges
 
-yp1 = sgd1.normalized_yamada_polynomial()
-print(yp1)
+    # Convert the node positions from tuples to numpy arrays
+    # node_positions = {node: np.array(nodes_dict[node]) for node in nodes_dict}
+
+    # Convert nodes_dict into a 2D array where each row is a node and the columns are the x, y, and z coordinates
+    node_positions = np.array([nodes_dict[node] for node in nodes_dict])
+
+    # Create the spatial graph diagram
+    sg1 = SpatialGraph(nodes=nodes, edges=edges, node_positions=node_positions)
+    sg1.plot()
+    sgd1 = sg1.create_spatial_graph_diagram()
+
+    yp1 = sgd1.normalized_yamada_polynomial()
+    print(yp1)
