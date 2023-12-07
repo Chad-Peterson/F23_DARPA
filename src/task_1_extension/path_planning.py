@@ -67,6 +67,42 @@ def numpy_array_to_networkx_grid_3d(placement, port_placement):
 
     return G
 
+def get_port_nodes(port_placement):
+
+    n, m = port_placement.shape
+    port_nodes = {}
+    for i, j in product(range(n), range(m)):
+        k = 0 # Assuming 2D port placement
+        if port_placement[i, j] != '0.0':
+            port_nodes[port_placement[i, j]] = (i, j, k)
+    return port_nodes
+
+
+def find_shortest_path(G, nodes_dict, edge):
+
+    # Obtain the start and end nodes
+    start_node_str, end_node_str = edge
+
+    # Obtain the port nodes
+    start_node = nodes_dict[start_node_str]
+    end_node = nodes_dict[end_node_str]
+
+    # Check if path exists
+    if nx.has_path(G, start_node, end_node):
+        path = nx.shortest_path(G, source=start_node, target=end_node)
+        print("Shortest path:", path)
+        return path
+    else:
+        print("No path exists between start and end nodes.")
+        return None
+
+def find_shortest_paths(G, nodes_dict, edges):
+    paths = []
+    for edge in edges:
+        path = find_shortest_path(G, nodes_dict, edge)
+        paths.append(path)
+    return paths
+
 
 
 def plot_grid_3d(grid, title="3D Grid Plot"):
@@ -137,46 +173,8 @@ def plot_grid_graph(G, path, grid):
     plt.gca().invert_yaxis()
     plt.show()
 
-# def plot_grid_graph_3d(G, path, grid):
-#     fig = plt.figure()
-#     ax = fig.add_subplot(111, projection='3d')
-#
-#     # Plot the grid
-#     for (y, x, z) in G.nodes():
-#         ax.text(x, y, z, s=str(grid[y][x][z]), horizontalalignment='center', verticalalignment='center')
-#     for ((y1, x1, z1), (y2, x2, z2)) in G.edges():
-#         ax.plot([x1, x2], [y1, y2], [z1, z2], color="black")
-#
-#     # Highlight the shortest path
-#     path_edges = list(zip(path, path[1:]))
-#     nx.draw_networkx_edges(G, pos={node: (node[1], node[0], node[2]) for node in G.nodes()}, edgelist=path_edges,
-#                            edge_color='orange', width=4, ax=ax)
-#
-#     # Highlight the start and end nodes
-#     path_start_node = path[0]
-#     path_end_node = path[-1]
-#
-#     nx.draw_networkx_nodes(G, pos={node: (node[1], node[0], node[2]) for node in G.nodes()}, nodelist=[path_start_node],
-#                            node_color='green', node_size=200, ax=ax)
-#
-#     nx.draw_networkx_nodes(G, pos={node: (node[1], node[0], node[2]) for node in G.nodes()}, nodelist=[path_end_node],
-#                            node_color='red', node_size=200, ax=ax)
-#
-#     # Set limits and labels
-#     ax.set_xlim(-1, grid.shape[1])
-#     ax.set_ylim(-1, grid.shape[0])
-#     ax.set_zlim(-1, grid.shape[2])
-#     ax.set_xticks(range(grid.shape[1]))
-#     ax.set_yticks(range(grid.shape[0]))
-#     ax.set_zticks(range(grid.shape[2]))
-#     ax.set_xticklabels([])
-#     ax.set_yticklabels([])
-#     ax.set_zticklabels([])
-#     ax.grid(True)
-#     plt.gca().invert_yaxis()
-#     plt.show()
 
-def plot_grid_graph_3d(G, path, grid):
+def plot_grid_graph_3d(G, paths, grid):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
@@ -193,20 +191,21 @@ def plot_grid_graph_3d(G, path, grid):
         if grid[z][y][x] == 1:
             ax.bar3d(x, y, z, 1, 1, 1, color='black', alpha=0.5)
 
-    # Highlight the shortest path
-    path_edges = list(zip(path, path[1:]))
-    for edge in path_edges:
-        xline = [edge[0][2], edge[1][2]]
-        yline = [edge[0][1], edge[1][1]]
-        zline = [edge[0][0], edge[1][0]]
-        ax.plot(xline, yline, zline, color='orange', linewidth=4)
+    for path in paths:
+        # Highlight the shortest path
+        path_edges = list(zip(path, path[1:]))
+        for edge in path_edges:
+            xline = [edge[0][2], edge[1][2]]
+            yline = [edge[0][1], edge[1][1]]
+            zline = [edge[0][0], edge[1][0]]
+            ax.plot(xline, yline, zline, color='orange', linewidth=4)
 
-    # Highlight the start and end nodes
-    path_start_node = path[0]
-    path_end_node = path[-1]
+        # Highlight the start and end nodes
+        path_start_node = path[0]
+        path_end_node = path[-1]
 
-    ax.scatter(path_start_node[2], path_start_node[1], path_start_node[0], color='green', s=200)
-    ax.scatter(path_end_node[2], path_end_node[1], path_end_node[0], color='red', s=200)
+        ax.scatter(path_start_node[2], path_start_node[1], path_start_node[0], color='green', s=200)
+        ax.scatter(path_end_node[2], path_end_node[1], path_end_node[0], color='red', s=200)
 
     # Set labels and title
     ax.set_xlabel('X axis')
