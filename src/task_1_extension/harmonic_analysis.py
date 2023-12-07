@@ -92,15 +92,10 @@ def convolve(a, w, plot=False):
     # Perform the inverse FFT
     convolution = np.fft.ifft2(pointwise_product)
 
+    # Take the real part of the result
+    convolution = np.real(convolution)
+
     if plot:
-
-        # Plot the workspace
-        w_fig, w_ax = plot_grid(w, 'Workspace')
-        w_fig.show()
-
-        # Plot the object
-        a_fig, a_ax = plot_grid(a, 'Object')
-        a_fig.show()
 
         # Plot the FFT of the workspace
         w_fft_fig, w_fft_ax = plot_fft(w_fft, 'FFT of Workspace')
@@ -115,7 +110,20 @@ def convolve(a, w, plot=False):
         pointwise_product_fig.show()
 
         # Plot the convolution
-        convolution_fig, convolution_ax = plot_fft(convolution, 'Convolution', display_boundary=True)
+        convolution_fig, convolution_ax = plot_grid(convolution, 'Convolution')
         convolution_fig.show()
 
     return convolution
+
+
+def determine_optimal_offset(a, w):
+
+    convolution_aw = convolve(a, w)
+
+    # Find the bottom-leftmost zero in the convolution
+    bottom_leftmost_zero = np.argwhere(convolution_aw == 0)[0]
+
+    # Determine the offset
+    offset = np.array([a.shape[0] - bottom_leftmost_zero[0], bottom_leftmost_zero[1]])
+
+    return offset

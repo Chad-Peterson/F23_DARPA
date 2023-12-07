@@ -1,15 +1,44 @@
 import numpy as np
 
-def merge_grids(grid1, grid2):
+
+def shift_and_trim_grid(grid, row_shift, col_shift):
+    n, m = grid.shape
+
+    # Handle row shift
+    if row_shift > 0:
+        # Shift down
+        shifted_grid = np.concatenate((np.zeros((row_shift, m)), grid[:-row_shift]), axis=0)
+    else:
+        # Shift up
+        shifted_grid = np.concatenate((grid[-row_shift:], np.zeros((-row_shift, m))), axis=0)
+
+    # Handle column shift
+    if col_shift > 0:
+        # Shift right
+        shifted_grid = np.concatenate((np.zeros((n, col_shift)), shifted_grid[:, :-col_shift]), axis=1)
+    else:
+        # Shift left
+        shifted_grid = np.concatenate((shifted_grid[:, -col_shift:], np.zeros((n, -col_shift))), axis=1)
+
+    return shifted_grid
+
+
+def merge_grids(grid1, grid2, offset=(0, 0)):
 
     """Superimpose grid2 on grid1."""
 
-    # Find the cells in grid2 that are not empty
-    grid2_nonzero = grid2 > 0
+    # Determine the size of the grids
+    n, m = grid1.shape
 
-    # Pick a random RGB color for the nonzero cells of grid2
-    color = np.random.rand(3)
+    # Initialize the result array with the first grid
+    result = np.array(grid1)
 
-    merged_grid = grid1 + grid2_nonzero
+    row_offset, col_offset = offset
 
-    return merged_grid
+    # Shift the second grid
+    shifted_grid2 = shift_and_trim_grid(grid2, row_offset, col_offset)
+
+    # Add the second grid to the result
+    result += shifted_grid2
+
+    return result
