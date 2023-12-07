@@ -46,7 +46,7 @@ def find_valid_offset(workspace, object_shape):
             shifted_object = np.roll(np.roll(object_shape, row_offset, axis=0), col_offset, axis=1)
 
             # Check for collisions
-            if np.all((workspace + shifted_object <= 1) | (object_shape == 0)):
+            if np.all((workspace + shifted_object <= 1)):
                 valid_positions.append((row_offset, col_offset))
 
     if not valid_positions:
@@ -54,7 +54,6 @@ def find_valid_offset(workspace, object_shape):
 
     # Randomly select one of the valid positions
     return random.choice(valid_positions)
-
 
 
 def shift_and_trim_object(grid, row_shift, col_shift):
@@ -89,6 +88,16 @@ def place_object(grid, obj, offset=(0, 0)):
     grid += shifted_obj
 
     return grid
+
+
+def generate_placement(workspace, objects):
+
+    for obj in objects:
+        offset = find_valid_offset(workspace, obj)
+        workspace = place_object(workspace, obj, offset)
+
+    return workspace
+
 
 def plot_grid(grid, title="Grid Plot"):
     fig, ax = plt.subplots()
