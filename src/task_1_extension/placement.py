@@ -1,6 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 import random
 
 
@@ -129,20 +127,3 @@ def generate_placement(workspace, objects, objects_ports):
         port_workspace = place_object_ports(port_workspace, obj_ports, offset)
 
     return workspace, port_workspace
-
-
-def plot_grid(grid, title="Grid Plot"):
-    fig, ax = plt.subplots()
-    cax = ax.imshow(grid, cmap='gray_r', vmin=0, vmax=1)  # You can choose different colormaps like 'gray', 'viridis', etc.
-
-    # Add a colorbar
-    cbar = fig.colorbar(cax, ax=ax)
-    cbar.set_label('Value')
-
-    # Add title and labels as needed
-    ax.set_title(title)
-    ax.set_xlabel('Column Index')
-    ax.set_ylabel('Row Index')
-
-    plt.show()
-

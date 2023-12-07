@@ -1,6 +1,7 @@
 import numpy as np
-from task_1_extension.placement import initialize_domain, initialize_object, generate_placement, plot_grid
-from task_1_extension.path_planning import make_3d, numpy_array_to_networkx_grid_3d, plot_grid_graph_3d, get_port_nodes, find_shortest_paths
+from task_1_extension.placement import initialize_domain, initialize_object, generate_placement
+from task_1_extension.path_planning import numpy_array_to_networkx_grid_3d, get_port_nodes, find_shortest_paths
+from task_1_extension.visualization import plot_grid, plot_grid_graph_3d
 from yamada import SpatialGraph
 
 # Set the random seed for reproducibility
@@ -69,10 +70,8 @@ try:
     # Find the shortest path
     paths = find_shortest_paths(G, nodes_dict, edges)
 
-    grid = make_3d(placement)
-
     # Plot the grid graph
-    plot_grid_graph_3d(G, paths, grid)
+    plot_grid_graph_3d(G, paths, placement)
 
 except:
     print("No path exists between start and end nodes.")
