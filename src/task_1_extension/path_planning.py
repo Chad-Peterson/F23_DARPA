@@ -95,15 +95,20 @@ def find_shortest_path(G, nodes_dict, edge):
     if nx.has_path(G, start_node, end_node):
         path = nx.shortest_path(G, source=start_node, target=end_node)
         print("Shortest path:", path)
-        return path
+
+        # Remove the path from the graph
+        G.remove_nodes_from(path)
+
+        return G, path
     else:
         print("No path exists between start and end nodes.")
         return None
 
+
 def find_shortest_paths(G, nodes_dict, edges):
     paths = []
     for edge in edges:
-        path = find_shortest_path(G, nodes_dict, edge)
+        G, path = find_shortest_path(G, nodes_dict, edge)
         paths.append(path)
     return paths
 
