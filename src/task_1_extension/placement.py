@@ -22,11 +22,18 @@ def initialize_domain(n, m, one_pad=True):
     return domain
 
 def initialize_object(name, n, m, rows, cols, port_rows, port_cols):
-    """Initialize an object of size n x m (plus padding) with ones at the specified rows and columns."""
+    """Initialize an object of size n x m (plus padding)
+    with ones at the specified rows and columns.
+    :param n: Number of rows
+    :param m: Number of columns
+    :param rows: List of rows
+    :param cols: List of columns
+    :param port_rows: List of rows for ports
+    :param port_cols: List of columns for ports
+    :return: Initialized object
+    """
     obj = np.zeros_like(initialize_domain(n, m))
     obj[rows, cols] = 1
-
-
 
     obj_ports = np.zeros_like(initialize_domain(n, m))
     obj_ports = obj_ports.astype(str)
@@ -40,6 +47,12 @@ def initialize_object(name, n, m, rows, cols, port_rows, port_cols):
 
 
 def find_valid_offset(workspace, object_shape):
+    """
+    Find a valid offset for the object within the workspace.
+    :param workspace: The workspace
+    :param object_shape: The shape of the object
+    :return: A valid offset for the object
+    """
 
     n, m = workspace.shape
 
@@ -76,6 +89,13 @@ def find_valid_offset(workspace, object_shape):
 
 
 def shift_and_trim_object(grid, row_shift, col_shift):
+    """
+    Shift and trim the object.
+    :param grid: The grid
+    :param row_shift: The number of rows to shift
+    :param col_shift: The number of columns to shift
+    :return: The shifted and trimmed object
+    """
 
     n, m = grid.shape
 
@@ -99,6 +119,13 @@ def shift_and_trim_object(grid, row_shift, col_shift):
 
 
 def place_object(grid, obj, offset=(0, 0)):
+    """
+    Place the object in the grid at the specified offset.
+    :param grid: The grid
+    :param obj: The object
+    :param offset: The offset
+    :return: The grid with the object placed
+    """
 
     # Shift and trim the object
     shifted_obj = shift_and_trim_object(obj, offset[0], offset[1])
@@ -109,6 +136,13 @@ def place_object(grid, obj, offset=(0, 0)):
     return grid
 
 def place_object_ports(port_workspace, obj_ports, offset=(0, 0)):
+    """
+    Place the object ports in the port_workspace at the specified offset.
+    :param port_workspace: The port_workspace
+    :param obj_ports: The object ports
+    :param offset: The offset
+    :return: The port_workspace with the object ports placed
+    """
     # Shift and trim the object
     shifted_obj_ports = shift_and_trim_object(obj_ports, offset[0], offset[1])
 
@@ -119,6 +153,13 @@ def place_object_ports(port_workspace, obj_ports, offset=(0, 0)):
 
 
 def generate_placement(workspace, objects, objects_ports):
+    """
+    Generate a placement of the objects in the workspace.
+    :param workspace: The workspace
+    :param objects: The objects
+    :param objects_ports: The objects ports
+    :return: The placement
+    """
 
     port_workspace = np.zeros_like(workspace).astype(str)
     for obj, obj_ports in zip(objects, objects_ports):

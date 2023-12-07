@@ -2,8 +2,6 @@ import networkx as nx
 import numpy as np
 from itertools import product
 
-from task_1_extension.visualization import plot_grid_graph
-
 
 def make_3d(array_2d):
     """

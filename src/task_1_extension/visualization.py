@@ -2,22 +2,7 @@ import networkx as nx
 import numpy as np
 from matplotlib import pyplot as plt
 
-def make_3d(array_2d):
-    """
-    Converts a 2D array to a 3D array by stacking two 2D grids of zeros on either side of the 2D array
-    :param array_2d: 2D array
-    :return: 3D array
-    """
-    # Get the shape of the 2D array
-    n, m = array_2d.shape
-
-    # Create two 2D grids of zeros with the same shape
-    zeros_grid = np.zeros((n, m))
-
-    # Stack the 2D array between the two grids of zeros
-    array_3d = np.dstack((zeros_grid, array_2d, zeros_grid))
-
-    return array_3d
+from task_1_extension.path_planning import make_3d
 
 
 def plot_grid(grid, title="Grid Plot"):
@@ -43,6 +28,12 @@ def plot_grid(grid, title="Grid Plot"):
 
 
 def plot_grid_3d(grid, title="3D Grid Plot"):
+    """
+    Plots a 3D grid
+    :param grid: The 3D grid to plot
+    :param title: The title of the plot
+    :return: None
+    """
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
@@ -79,6 +70,13 @@ def plot_grid_3d(grid, title="3D Grid Plot"):
 
 
 def plot_grid_graph(G, path, grid):
+    """
+    Plots a grid graph
+    :param G: The grid graph
+    :param path: The shortest path
+    :param grid: The grid
+    :return:
+    """
     fig, ax = plt.subplots()
     # Plot the grid
     for (y, x) in G.nodes():
@@ -114,6 +112,13 @@ def plot_grid_graph(G, path, grid):
 
 
 def plot_grid_graph_3d(G, paths, grid):
+    """
+    Plots a 3D grid graph
+    :param G: The grid graph
+    :param paths: The shortest paths
+    :param grid: The grid
+    :return: None
+    """
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
