@@ -101,8 +101,7 @@ def find_shortest_path(G, nodes_dict, edge):
 
         return G, path
     else:
-        print("No path exists between start and end nodes.")
-        return None
+        raise Exception("No path exists between start and end nodes.")
 
 
 def find_shortest_paths(G, nodes_dict, edges):

@@ -6,6 +6,8 @@ from task_1_extension.placement import initialize_domain, initialize_object, fin
 from task_1_extension.path_planning import make_3d, numpy_array_to_networkx_grid_3d, plot_grid_graph, plot_grid_3d, plot_grid_graph_3d, get_port_nodes,\
     find_shortest_path, find_shortest_paths
 
+from yamada import SpatialGraph
+
 # Set the random seed for reproducibility
 import random
 random.seed(9)
@@ -57,67 +59,47 @@ a4, a4_ports = initialize_object('a4', n, m, a4_rows, a4_cols, a4_port_rows, a4_
 
 # %% Place the Objects
 
-# Place the objects
-placement, port_placement = generate_placement(w, [a1, a2, a3, a4], [a1_ports, a2_ports, a3_ports, a4_ports])
-plot_grid(placement, 'Placement')
-# plot_grid(port_placement, 'Port Placement')
+try:
 
-# Define port connections
-edges = [('a1_1', 'a2_0'), ('a2_1', 'a3_0'), ('a3_1', 'a4_0'), ('a4_1', 'a1_0')]
+    # Place the objects
+    placement, port_placement = generate_placement(w, [a1, a2, a3, a4], [a1_ports, a2_ports, a3_ports, a4_ports])
+    plot_grid(placement, 'Placement')
+    # plot_grid(port_placement, 'Port Placement')
 
+    # Define port connections
+    edges = [('a1_1', 'a2_0'), ('a2_1', 'a3_0'), ('a3_1', 'a4_0'), ('a4_1', 'a1_0')]
 
-G = numpy_array_to_networkx_grid_3d(placement, port_placement)
+    G = numpy_array_to_networkx_grid_3d(placement, port_placement)
 
-nodes_dict = get_port_nodes(port_placement)
+    nodes_dict = get_port_nodes(port_placement)
 
-# Find the shortest path
-paths = find_shortest_paths(G, nodes_dict, edges)
+    # Find the shortest path
+    paths = find_shortest_paths(G, nodes_dict, edges)
 
-grid = make_3d(placement)
+    grid = make_3d(placement)
 
-# Plot the grid graph
-plot_grid_graph_3d(G, paths, grid)
+    # Plot the grid graph
+    plot_grid_graph_3d(G, paths, grid)
 
-# %% Create the Graphs
+except:
+    print("No path exists between start and end nodes.")
 
+# %% Create the Spatial Graph Diagrams
 
+nodes = ['a1_0', 'a1_1', 'a2_0', 'a2_1', 'a3_0', 'a3_1', 'a4_0', 'a4_1']
 
-# Define start and end nodes (ensure these are not obstacle cells)
-# start_node = (0, 0, 0)
-# end_node = (5, 5, 2)
-#
-# # Check if path exists
-# if nx.has_path(G, start_node, end_node):
-#     path = nx.shortest_path(G, source=start_node, target=end_node)
-#     print("Shortest path:", path)
-#
-#     grid = make_3d(placement)
-#
-#     # Plot the grid graph
-#     plot_grid_graph_3d(G, path, grid)
-# else:
-#     print("No path exists between start and end nodes.")
+# add edges between the nodes of a component
+internal_edges = [('a1_0', 'a1_1'), ('a2_0', 'a2_1'), ('a3_0', 'a3_1'), ('a4_0', 'a4_1')]
+edges = edges + internal_edges
 
-# Plot the graph
-# plot_grid_graph(G, [], placement)
+# Convert the node positions from tuples to numpy arrays
+# node_positions = {node: np.array(nodes_dict[node]) for node in nodes_dict}
 
-# %% Convolve the Objects with the Workspace
+# Convert nodes_dict into a 2D array where each row is a node and the columns are the x, y, and z coordinates
+node_positions = np.array([nodes_dict[node] for node in nodes_dict])
 
-# # Convolve the objects with the workspace
-# a1_convolution = convolve(a1, w, plot=True)
-# a2_convolution = convolve(a2, w)
-# a3_convolution = convolve(a3, w)
-#
-#
-# # %% Place the objects
-#
-# offset_a1 = determine_optimal_offset(a1, w)
-#
-# # Place the object
-# w_updated = merge_grids(w, a1, offset_a1)
-#
-# # Plot the result
-# w_updated_fig, w_updated_ax = plot_grid(w_updated, 'Workspace with Object A1')
-# w_updated_fig.show()
+# Create the spatial graph diagram
+sg1 = SpatialGraph(nodes=nodes, edges=edges, node_positions=node_positions)
+sg1.plot()
+# sgd1 = sg1.create_spatial_graph_diagram()
 
-# %% Place the objects
