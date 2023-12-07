@@ -101,5 +101,7 @@ node_positions = np.array([nodes_dict[node] for node in nodes_dict])
 # Create the spatial graph diagram
 sg1 = SpatialGraph(nodes=nodes, edges=edges, node_positions=node_positions)
 sg1.plot()
-# sgd1 = sg1.create_spatial_graph_diagram()
+sgd1 = sg1.create_spatial_graph_diagram()
 
+yp1 = sgd1.normalized_yamada_polynomial()
+print(yp1)
