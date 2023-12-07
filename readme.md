@@ -7,4 +7,5 @@ pip install .
 
 For instructions on how to run the code, please see "examples/example.py"
 
-For API documentation, please see "docs/build/html/index.html"
+For API documentation, please open "api.html" with a web browser of your choice.
+This API has multiple pages, each associated with a module.
