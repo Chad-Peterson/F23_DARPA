@@ -3,7 +3,7 @@ import networkx as nx
 from task_1_extension.harmonic_analysis import convolve, determine_optimal_offset
 # from task_1_extension.discrete_geometry import merge_grids
 from task_1_extension.placement import initialize_domain, initialize_object, find_valid_offset, place_object, generate_placement, plot_grid
-from task_1_extension.path_planning import numpy_array_to_networkx_grid_3d, plot_grid_graph, plot_grid_3d
+from task_1_extension.path_planning import make_3d, numpy_array_to_networkx_grid_3d, plot_grid_graph, plot_grid_3d, plot_grid_graph_3d
 
 # Set the random seed for reproducibility
 import random
@@ -87,6 +87,13 @@ plot_grid(placement, 'Placement')
 # Define port connections
 edges = [('a1_1', 'a2_0'), ('a2_1', 'a3_0'), ('a3_1', 'a4_0'), ('a4_1', 'a1_0')]
 
+from task_1_extension.path_planning import make_3d_port_mask
+
+
+G = numpy_array_to_networkx_grid_3d(placement, port_placement)
+
+
+
 
 
 # %% Create the Graphs
@@ -95,19 +102,21 @@ edges = [('a1_1', 'a2_0'), ('a2_1', 'a3_0'), ('a3_1', 'a4_0'), ('a4_1', 'a1_0')]
 # G = numpy_array_to_networkx_grid_3d(placement)
 # plot_grid_3d(placement, 'Placement')
 
-# # Define start and end nodes (ensure these are not obstacle cells)
-# start_node = (0, 0)
-# end_node = (0, 2)
-#
-# # Check if path exists
-# if nx.has_path(G, start_node, end_node):
-#     path = nx.shortest_path(G, source=start_node, target=end_node)
-#     print("Shortest path:", path)
-#
-#     # Plot the grid graph
-#     plot_grid_graph(G, path, G)
-# else:
-#     print("No path exists between start and end nodes.")
+# Define start and end nodes (ensure these are not obstacle cells)
+start_node = (0, 0, 0)
+end_node = (5, 5, 2)
+
+# Check if path exists
+if nx.has_path(G, start_node, end_node):
+    path = nx.shortest_path(G, source=start_node, target=end_node)
+    print("Shortest path:", path)
+
+    grid = make_3d(placement)
+
+    # Plot the grid graph
+    plot_grid_graph_3d(G, path, grid)
+else:
+    print("No path exists between start and end nodes.")
 
 # Plot the graph
 # plot_grid_graph(G, [], placement)

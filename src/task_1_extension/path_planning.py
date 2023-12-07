@@ -16,10 +16,34 @@ def make_3d(array_2d):
 
     return array_3d
 
+def make_3d_port_mask(array_2d):
+    # Get the shape of the 2D array
+    n, m = array_2d.shape
 
-def numpy_array_to_networkx_grid_3d(array):
+    # Create two 2D grids of zeros with the same shape
+    zeros_grid = np.zeros((n, m))
 
-    array = make_3d(array)
+    # Insert nonzero values as ones
+    center_grid = np.zeros((n, m))
+    center_grid[array_2d != '0.0'] = 1
+
+    # Stack the 2D array between the two grids of zeros
+    array_3d = np.dstack((zeros_grid, center_grid, zeros_grid))
+
+    return array_3d
+
+
+def numpy_array_to_networkx_grid_3d(placement, port_placement):
+
+    # If the array is 2D, convert it to 3D
+    if len(placement.shape) == 2:
+        placement = make_3d(placement)
+
+    if len(port_placement.shape) == 2:
+        port_placement = make_3d_port_mask(port_placement)
+
+    # Set ports to zero so that they are kept as nodes
+    array = placement - port_placement
 
     n, m, p = array.shape
     G = nx.Graph()
@@ -113,7 +137,84 @@ def plot_grid_graph(G, path, grid):
     plt.gca().invert_yaxis()
     plt.show()
 
+# def plot_grid_graph_3d(G, path, grid):
+#     fig = plt.figure()
+#     ax = fig.add_subplot(111, projection='3d')
+#
+#     # Plot the grid
+#     for (y, x, z) in G.nodes():
+#         ax.text(x, y, z, s=str(grid[y][x][z]), horizontalalignment='center', verticalalignment='center')
+#     for ((y1, x1, z1), (y2, x2, z2)) in G.edges():
+#         ax.plot([x1, x2], [y1, y2], [z1, z2], color="black")
+#
+#     # Highlight the shortest path
+#     path_edges = list(zip(path, path[1:]))
+#     nx.draw_networkx_edges(G, pos={node: (node[1], node[0], node[2]) for node in G.nodes()}, edgelist=path_edges,
+#                            edge_color='orange', width=4, ax=ax)
+#
+#     # Highlight the start and end nodes
+#     path_start_node = path[0]
+#     path_end_node = path[-1]
+#
+#     nx.draw_networkx_nodes(G, pos={node: (node[1], node[0], node[2]) for node in G.nodes()}, nodelist=[path_start_node],
+#                            node_color='green', node_size=200, ax=ax)
+#
+#     nx.draw_networkx_nodes(G, pos={node: (node[1], node[0], node[2]) for node in G.nodes()}, nodelist=[path_end_node],
+#                            node_color='red', node_size=200, ax=ax)
+#
+#     # Set limits and labels
+#     ax.set_xlim(-1, grid.shape[1])
+#     ax.set_ylim(-1, grid.shape[0])
+#     ax.set_zlim(-1, grid.shape[2])
+#     ax.set_xticks(range(grid.shape[1]))
+#     ax.set_yticks(range(grid.shape[0]))
+#     ax.set_zticks(range(grid.shape[2]))
+#     ax.set_xticklabels([])
+#     ax.set_yticklabels([])
+#     ax.set_zticklabels([])
+#     ax.grid(True)
+#     plt.gca().invert_yaxis()
+#     plt.show()
 
+def plot_grid_graph_3d(G, path, grid):
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    # Assuming grid is 3D, plot the grid values at their corresponding nodes
+    for (z, y, x) in G.nodes():
+        ax.text(x, y, z, s=str(grid[z][y][x]), horizontalalignment='center', verticalalignment='center', color='gray', alpha=0.15)
+
+    # Plot the edges
+    for ((z1, y1, x1), (z2, y2, x2)) in G.edges():
+        ax.plot([x1, x2], [y1, y2], [z1, z2], color="gray", linewidth=2, alpha=0.15)
+
+    # Plot the obstacles
+    for (z, y, x) in G.nodes():
+        if grid[z][y][x] == 1:
+            ax.bar3d(x, y, z, 1, 1, 1, color='black', alpha=0.5)
+
+    # Highlight the shortest path
+    path_edges = list(zip(path, path[1:]))
+    for edge in path_edges:
+        xline = [edge[0][2], edge[1][2]]
+        yline = [edge[0][1], edge[1][1]]
+        zline = [edge[0][0], edge[1][0]]
+        ax.plot(xline, yline, zline, color='orange', linewidth=4)
+
+    # Highlight the start and end nodes
+    path_start_node = path[0]
+    path_end_node = path[-1]
+
+    ax.scatter(path_start_node[2], path_start_node[1], path_start_node[0], color='green', s=200)
+    ax.scatter(path_end_node[2], path_end_node[1], path_end_node[0], color='red', s=200)
+
+    # Set labels and title
+    ax.set_xlabel('X axis')
+    ax.set_ylabel('Y axis')
+    ax.set_zlabel('Z axis')
+    ax.set_title("3D Grid Graph")
+
+    plt.show()
 
 
 if __name__ == '__main__':
