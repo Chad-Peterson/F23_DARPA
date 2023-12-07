@@ -87,6 +87,10 @@ def find_shortest_path(G, nodes_dict, edge):
     start_node = nodes_dict[start_node_str]
     end_node = nodes_dict[end_node_str]
 
+    # Shift z coordinate by 1 since the port nodes are in the middle of the grid
+    start_node = (start_node[0], start_node[1], start_node[2] + 1)
+    end_node = (end_node[0], end_node[1], end_node[2] + 1)
+
     # Check if path exists
     if nx.has_path(G, start_node, end_node):
         path = nx.shortest_path(G, source=start_node, target=end_node)
@@ -122,8 +126,9 @@ def plot_grid_3d(grid, title="3D Grid Plot"):
         for j in range(m):
             for k in range(p):
                 if grid[i, j, k] != 0:  # Plot only non-zero cells
-                    ax.bar3d(i, j, k, cube_size, cube_size, cube_size, color=plt.cm.gray_r(grid[i, j, k]), alpha=0.7,
-                             shade=True)
+                    # ax.bar3d(i, j, k, cube_size, cube_size, cube_size, color=plt.cm.gray_r(grid[i, j, k]), alpha=0.7,
+                    #          shade=True)
+                    ax.scatter(i, j, k, color=plt.cm.gray_r(grid[i, j, k]), alpha=0.7, s=100)
 
     # Set the view, labels, and title
     ax.view_init(elev=30, azim=30)
@@ -189,7 +194,8 @@ def plot_grid_graph_3d(G, paths, grid):
     # Plot the obstacles
     for (z, y, x) in G.nodes():
         if grid[z][y][x] == 1:
-            ax.bar3d(x, y, z, 1, 1, 1, color='black', alpha=0.5)
+            # ax.bar3d(x, y, z, 1, 1, 1, color='black', alpha=0.5)
+            ax.scatter(x, y, z, color='black', alpha=0.75, s=500)
 
     for path in paths:
         # Highlight the shortest path

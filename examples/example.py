@@ -71,12 +71,12 @@ G = numpy_array_to_networkx_grid_3d(placement, port_placement)
 nodes_dict = get_port_nodes(port_placement)
 
 # Find the shortest path
-path = find_shortest_path(G, nodes_dict, ('a1_1', 'a4_0'))
+paths = find_shortest_paths(G, nodes_dict, edges)
 
 grid = make_3d(placement)
 
 # Plot the grid graph
-plot_grid_graph_3d(G, [path], grid)
+plot_grid_graph_3d(G, paths, grid)
 
 # %% Create the Graphs
 
