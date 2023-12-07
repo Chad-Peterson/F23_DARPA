@@ -41,7 +41,7 @@ def plot_grid(grid, title):
     return fig, ax
 
 
-def plot_fft(fft_result, title, display_boundary=False):
+def plot_fft(fft_result, title):
 
     fig, ax = plt.subplots()
 
@@ -60,22 +60,7 @@ def plot_fft(fft_result, title, display_boundary=False):
 
     cbar = fig.colorbar(cax, ax=ax)
 
-    # Draw a boundary around the grid cells near zero
-    if display_boundary:
-
-        threshold = 0.1
-
-        # Create a binary mask for values below the threshold
-        mask = np.where(magnitude_scaled < threshold, 1, 0)
-
-        # Plot the original array
-        ax.imshow(magnitude_scaled, cmap='grey')
-        # plt.colorbar()  # To show the value scale
-
-        # Plot the contour around near-zero values
-        ax.imshow(mask, cmap='Reds', interpolation='none', alpha=0.5)
-
-    return fig, ax
+    plt.show()
 
 
 def convolve(a, w, plot=False):
@@ -87,7 +72,7 @@ def convolve(a, w, plot=False):
     a_flipped_fft = np.fft.fft2(a_flipped)
 
     # Perform the pointwise product
-    pointwise_product = a_flipped_fft * w_fft
+    pointwise_product = w_fft * a_flipped_fft
 
     # Perform the inverse FFT
     convolution = np.fft.ifft2(pointwise_product)
@@ -98,30 +83,22 @@ def convolve(a, w, plot=False):
     if plot:
 
         # Plot the FFT of the workspace
-        w_fft_fig, w_fft_ax = plot_fft(w_fft, 'FFT of Workspace')
-        w_fft_fig.show()
-
-        # Plot the FFT of the flipped object
-        a_flipped_fft_fig, a_flipped_fft_ax = plot_fft(a_flipped_fft, 'FFT of Flipped Object')
-        a_flipped_fft_fig.show()
-
-        # Plot the pointwise product
-        pointwise_product_fig, pointwise_product_ax = plot_fft(pointwise_product, 'Pointwise Product')
-        pointwise_product_fig.show()
-
-        # Plot the convolution
-        convolution_fig, convolution_ax = plot_grid(convolution, 'Convolution')
-        convolution_fig.show()
+        plot_fft(w_fft, 'FFT of Workspace')
+        plot_fft(a_flipped_fft, 'FFT of Flipped Object')
+        plot_fft(pointwise_product, 'Pointwise Product')
 
     return convolution
 
 
-def determine_optimal_offset(a, w):
+def determine_optimal_offset(w, a):
 
-    convolution_aw = convolve(a, w)
+    convolution_wa = convolve(w, a)
+
+    # Trim the convolution to prevent object placement outside the workspace
+
 
     # Find the bottom-leftmost zero in the convolution
-    bottom_leftmost_zero = np.argwhere(convolution_aw == 0)[0]
+    bottom_leftmost_zero = np.argwhere(convolution_wa == 0)[0]
 
     # Determine the offset
     offset = np.array([a.shape[0] - bottom_leftmost_zero[0], bottom_leftmost_zero[1]])

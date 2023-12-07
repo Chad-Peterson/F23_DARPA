@@ -1,61 +1,76 @@
 import numpy as np
-from task_1_extension.harmonic_analysis import convolve, plot_grid, determine_optimal_offset
-from task_1_extension.discrete_geometry import merge_grids
+from task_1_extension.harmonic_analysis import convolve, determine_optimal_offset
+# from task_1_extension.discrete_geometry import merge_grids
+from task_1_extension.placement_3d import initialize_domain, initialize_object, find_valid_offset, place_object, plot_grid
 
 # %% Define the workspace
 
 # %% Define the workspace
 
-w = np.zeros((16, 16))
+# Dimensions of the workspace
+n, m = 16, 16
 
-w_fig, w_ax = plot_grid(w, 'Workspace')
-w_fig.show()
+w = initialize_domain(n, m)
+plot_grid(w, 'Workspace')
 
 
 # %% Define the Objects
 
-a1 = np.zeros((16, 16))
+# Object A1
 a1_rows = [5, 6, 6, 7, 7, 7, 8, 8, 8, 8, 9, 9, 9]
 a1_cols = [6, 6, 7, 6, 7, 8, 6, 7, 8, 9, 6, 7, 8]
-a1[a1_rows, a1_cols] = 1
+a1 = initialize_object(n, m, a1_rows, a1_cols)
+plot_grid(a1, 'Object A1')
 
-# Plot the object
-a1_fig, a1_ax = plot_grid(a1, 'Object A1')
-a1_fig.show()
-
-a2 = np.zeros((16, 16))
+# Object A2
 a2_rows = [5, 6, 6, 7, 7, 7, 8, 8]
 a2_cols = [6, 6, 7, 6, 7, 8, 6, 7]
-a2[a2_rows, a2_cols] = 1
+a2 = initialize_object(n, m, a2_rows, a2_cols)
+# plot_grid(a2, 'Object A2')
 
-# Plot the object
-a2_fig, a2_ax = plot_grid(a2, 'Object A2')
-a2_fig.show()
-
-a3 = np.zeros((16, 16))
+# Object A3
 a3_rows = [6, 6, 7, 7, 8, 8]
 a3_cols = [6, 7, 6, 7, 6, 7]
-a3[a3_rows, a3_cols] = 1
+a3 = initialize_object(n, m, a3_rows, a3_cols)
+# plot_grid(a3, 'Object A3')
 
-# Plot the object
-a3_fig, a3_ax = plot_grid(a3, 'Object A3')
-a3_fig.show()
+# convolution_wa = convolve(w, a1, plot=True)
+# plot_grid(convolution_wa, 'Convolution of W and A1')
+# # a1_offset = determine_optimal_offset(w, a1)
+# a1_offset = (6, 6)
+
+a1_offset = find_valid_offset(w, a1)
+
+# Place the object
+w_updated = place_object(w, a1, a1_offset)
+plot_grid(w_updated, 'Workspace with Object A1')
+
+# Add the shifted object to the workspace
+# w_updated = place_object(w, a3, (1, 3))
+# plot_grid(w_updated, 'Workspace with Object A3')
+#
+# w_updated = place_object(w_updated, a2, (-1, -6))
+# plot_grid(w_updated, 'Workspace with Object A2')
+
+
 
 # %% Convolve the Objects with the Workspace
 
-# Convolve the objects with the workspace
-a1_convolution = convolve(a1, w, plot=True)
-a2_convolution = convolve(a2, w)
-a3_convolution = convolve(a3, w)
-
+# # Convolve the objects with the workspace
+# a1_convolution = convolve(a1, w, plot=True)
+# a2_convolution = convolve(a2, w)
+# a3_convolution = convolve(a3, w)
+#
+#
+# # %% Place the objects
+#
+# offset_a1 = determine_optimal_offset(a1, w)
+#
+# # Place the object
+# w_updated = merge_grids(w, a1, offset_a1)
+#
+# # Plot the result
+# w_updated_fig, w_updated_ax = plot_grid(w_updated, 'Workspace with Object A1')
+# w_updated_fig.show()
 
 # %% Place the objects
-
-offset_a1 = determine_optimal_offset(a1, w)
-
-# Place the object
-w_updated = merge_grids(w, a1, offset_a1)
-
-# Plot the result
-w_updated_fig, w_updated_ax = plot_grid(w_updated, 'Workspace with Object A1')
-w_updated_fig.show()
