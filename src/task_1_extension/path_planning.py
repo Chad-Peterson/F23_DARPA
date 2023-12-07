@@ -62,7 +62,6 @@ if __name__ == '__main__':
     # Example 2D grid (1s and 0s, where 0s represent obstacles)
     grid = np.ones((5, 5))
     grid[1][2] = 0  # Example obstacle
-    # grid[2][2] = 0  # Example obstacle
 
     # Create a graph from the grid
     G = create_grid_graph(grid)
