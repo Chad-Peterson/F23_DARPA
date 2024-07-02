@@ -30,3 +30,4 @@ def shift_and_trim_grid(grid, row_shift, col_shift):
         shifted_grid = np.concatenate((shifted_grid[:, -col_shift:], np.zeros((n, -col_shift))), axis=1)
 
     return shifted_grid
+
